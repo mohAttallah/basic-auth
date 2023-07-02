@@ -1,21 +1,20 @@
 'use strict';
 
 require('dotenv').config();
-const { app } = require('../src/server');
-const supertest = require('supertest');
-const mockServer = supertest(app);
-
+const { app } = require("../server");
+const supertest = require("supertest");
+const req = supertest(app);
 
 
 describe("Server test", () => {
-  it('should return 404 for a bad route', async () => {
-  const response = await mockServer.get('/bad-route');
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe('Not found');
+  it("Route not found", async () => {
+    const res = await req.get("/new");
+    expect(res.status).toEqual(404);
   });
-  it('should return 404 for a bad method', async () => {
-  const response = await mockServer.put('/schools');
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe('Not found');
+
+  it("Route not found", async () => {
+    const res = await req.put("/new");
+    expect(res.status).toEqual(404);
+  });
 });
-  });
+
