@@ -3,10 +3,6 @@ const base64 = require("base-64");
 const { User } = require("../models");
 
 
-async function hashedPass(password){
-    const hashedPass = await bcrypt.hash(password, 5);
-    return hashedPass; 
-}
 
 const basicAuth = async (req, res, next) => {
   if (req.headers.authorization) {
@@ -33,8 +29,26 @@ const basicAuth = async (req, res, next) => {
   }
 };
 
+const signupMiddleware = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const hashedPass = await bcrypt.hash(password, 10);
+
+    const record = await User.create({
+      username: username,
+      password: hashedPass
+    });
+
+    res.locals.record = record; // Store the created record in res.locals for subsequent middleware or route handlers
+    next(); // Proceed to the next middleware or route handler
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 module.exports = {
-    hashedPass: hashedPass,
+    signupMiddleware:signupMiddleware,
     basicAuth:basicAuth
 }
